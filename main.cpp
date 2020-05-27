@@ -20,7 +20,7 @@ int main()
 //    }
 
 
-    // Video stream
+    // Video stream input
     cv::Mat pic;
     cv::VideoCapture vc(0);
     if(!vc.isOpened()){
