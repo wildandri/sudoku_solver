@@ -13,7 +13,7 @@ class SolverEngine
 {
 public:
     // Constructors
-    SolverEngine(int height, int width);
+    SolverEngine(int width, int height);
 
     //Functions
     bool findSudoku();

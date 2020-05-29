@@ -5,10 +5,7 @@
 NumberDetector::NumberDetector()
 {
 
-    // Create Tesseract object
     ocr = new tesseract::TessBaseAPI();
-
-    // Initialize tesseract
     ocr->Init(NULL, "eng", tesseract::OEM_LSTM_ONLY);
     ocr->SetPageSegMode(tesseract::PSM_SINGLE_CHAR);
     ocr->SetVariable("debug_file", "/dev/null");
@@ -19,6 +16,7 @@ std::vector<short int> NumberDetector::findNumbers(cv::Mat &picture)
 
     std::vector<short int> sudokuNumbers;
     threshold(picture,picture,100,255,cv::THRESH_BINARY);
+    cv::imshow("Number Detection" , picture);
 
     int x_size = picture.cols;
     int y_size = picture.rows;

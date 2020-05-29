@@ -12,7 +12,7 @@ int main()
     double time = (double)cv::getTickCount();
 
 //     Load Image
-//    cv::Mat pic = cv::imread("/home/andri/Pictures/pic.jpg",cv::IMREAD_GRAYSCALE);
+//    cv::Mat frame = cv::imread("/home/andri/frametures/pic.jpg",cv::IMREAD_GRAYSCALE);
 //    if( pic.empty() )
 //    {
 //      std::cout << "Could not open or find the image!\n" << std::endl;
@@ -21,29 +21,29 @@ int main()
 
 
     // Video stream input
-    cv::Mat pic;
-    cv::VideoCapture vc(0);
-    if(!vc.isOpened()){
+    cv::Mat frame;
+    cv::VideoCapture cameraFrame(0);
+    if(!cameraFrame.isOpened()){
         std::cout << "Video stream not opened !!!" << std::endl;
     }
 
-    SolverEngine es = SolverEngine(400,400);
+    SolverEngine es = SolverEngine(1280,720);
 
-    vc.set(cv::CAP_PROP_FRAME_WIDTH ,es.getWidth());
-    vc.set(cv::CAP_PROP_FRAME_HEIGHT ,es.getHeight());
+    cameraFrame.set(cv::CAP_PROP_FRAME_WIDTH ,es.getWidth());
+    cameraFrame.set(cv::CAP_PROP_FRAME_HEIGHT ,es.getHeight());
 
     do
     {
-        vc >>pic;
-        cvtColor( pic, pic, cv::COLOR_BGR2GRAY );
-        cv::imshow("Livestream", pic);
+        cameraFrame >> frame;
+        cvtColor( frame, frame, cv::COLOR_BGR2GRAY );
+        cv::imshow("Livestream", frame);
 
-        es.setPicture(pic);
-        cv::waitKey(10);
+        es.setPicture(frame);
+        cv::waitKey(1);
 
     } while (!es.findSudoku());
 
-    vc.release();
+    cameraFrame.release();
 
     std::vector<short int> result = es.detectNumbers(es.getDetectedSudoku());
 

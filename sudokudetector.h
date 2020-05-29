@@ -9,20 +9,22 @@
 #include "opencv2/imgproc.hpp"
 #include <opencv2/highgui.hpp>
 
+#define MIN_SUDOKU_AREA 100000
+#define RESULT_SIZE 300
+
 class SudokuDetector
 {
 public:
-    SudokuDetector(int height, int width);
+    SudokuDetector(int width, int height);
 
     bool detect(cv::Mat &picture);
 
     bool isDetectionComplete() const;
     cv::Mat getDetectedSudoku() const;
 
-
 private:
     void calcSudokuCorner(std::vector<cv::Point> &approx);
-    void prepare();
+    void drawDetectedSudoku(cv::Mat &picture);
 
     cv::Mat m_detectedSudoku;
     bool m_isComplete;

@@ -1,13 +1,17 @@
 #include "sudokudetector.h"
 
 
-SudokuDetector::SudokuDetector(int height, int width):
+SudokuDetector::SudokuDetector(int width, int height):
     m_height(height),m_width(width)
 {
     m_isComplete = false;
-    m_minSudokuArea = m_height * m_width * 0.5;
-    std::cout << m_minSudokuArea << std::endl;
-    prepare();
+
+    m_detectedSudoku = cv::Mat::zeros(RESULT_SIZE, RESULT_SIZE, cv::COLOR_BGRA2GRAY);
+
+    m_warpCorners[0] = cv::Point2f( 0.f, 0.f );
+    m_warpCorners[1] = cv::Point2f( RESULT_SIZE - 1.f, 0.f );
+    m_warpCorners[2] = cv::Point2f( RESULT_SIZE - 1.f , RESULT_SIZE - 1.f);
+    m_warpCorners[3] = cv::Point2f( 0.f, RESULT_SIZE - 1.f );
 }
 
 
@@ -27,13 +31,10 @@ bool SudokuDetector::detect(cv::Mat &picture)
     for(size_t i = 0; i < contours.size(); i ++){
        cv::approxPolyDP(contours[i], approx, cv::arcLength(contours[i], true)*0.02, true);
 
-
             // 4 Punkte                     // Fläche                //Keine selbst-überschneidungen
-       if( approx.size() == 4 && fabs(cv::contourArea(approx)) > m_minSudokuArea && cv::isContourConvex(approx) )
+       if( approx.size() == 4 && fabs(cv::contourArea(approx)) > MIN_SUDOKU_AREA && cv::isContourConvex(approx) )
        {
-           std::cout << "contourArea: " << fabs(cv::contourArea(approx)) << std::endl;
            calcSudokuCorner(approx);
-
            cv::Mat warp_mat = cv::getPerspectiveTransform(m_sudoku_corner,m_warpCorners);
            cv::warpPerspective(picture,m_detectedSudoku,warp_mat,m_detectedSudoku.size());
            m_isComplete = true;
@@ -76,42 +77,30 @@ void SudokuDetector::calcSudokuCorner(std::vector<cv::Point> &approx)
             }
         }
     }
-
-
-//    //********************** DRAW *******************************
-//    //edge markers
-//    cv::Mat m_picture_copy = m_picture.clone();
-//    cvtColor( m_picture_copy, m_picture_copy, cv::COLOR_GRAY2BGR );
-
-//    int marker_size = 20;
-//    drawMarker(m_picture_copy,sudoku_corner[0],cv::Scalar(0,0,255),cv::MARKER_CROSS,marker_size,1,8);
-//    drawMarker(m_picture_copy,sudoku_corner[1],cv::Scalar(0,255,0),cv::MARKER_CROSS,marker_size,1,8);
-//    drawMarker(m_picture_copy,sudoku_corner[2],cv::Scalar(255,0,0),cv::MARKER_CROSS,marker_size,1,8);
-//    drawMarker(m_picture_copy,sudoku_corner[3],cv::Scalar(50,225,235),cv::MARKER_CROSS,marker_size,1,8);
-
-//    //rectangle(m_picture,Point2f(0.0f,0.0f),m_picture_center,Scalar(255,0,0),1,LINE_4,0);
-//    //rectangle(m_picture,Point2f(m_picture.cols,0.0f),m_picture_center,Scalar(0,255,0),1,LINE_4,0);
-//    //rectangle(m_picture,Point2f(m_picture.cols,m_picture.rows),m_picture_center,Scalar(0,0,255),1,LINE_4,0);
-//    //rectangle(m_picture,Point2f(0.0f,m_picture.rows),m_picture_center,Scalar(255,255,255),1,LINE_4,0);
-
-//    drawMarker(m_picture_copy,minBox.center,cv::Scalar(0,0,255),cv::MARKER_CROSS,20,1,cv::LINE_8);
-//    imshow("Markers",m_picture_copy);
-
-//    //************************************************************
-
-
-
 }
 
-void SudokuDetector::prepare()
+void SudokuDetector::drawDetectedSudoku(cv::Mat &picture)
 {
-    m_detectedSudoku = cv::Mat::zeros(m_height,m_width,cv::COLOR_BGRA2GRAY);
+    //********************** DRAW *******************************
+    //edge markers
+    cv::Mat drawPicture = picture.clone();
+    cvtColor( drawPicture, drawPicture, cv::COLOR_GRAY2BGR );
 
-    m_warpCorners[0] = cv::Point2f( 0.f, 0.f );
-    m_warpCorners[1] = cv::Point2f( m_width - 1.f, 0.f );
-    m_warpCorners[2] = cv::Point2f( m_width - 1.f , m_height - 1.f);
-    m_warpCorners[3] = cv::Point2f( 0.f, m_height - 1.f );
+    int marker_size = 20;
+    drawMarker(drawPicture,m_sudoku_corner[0],cv::Scalar(0,0,255),cv::MARKER_CROSS,marker_size,1,8);
+    drawMarker(drawPicture,m_sudoku_corner[1],cv::Scalar(0,255,0),cv::MARKER_CROSS,marker_size,1,8);
+    drawMarker(drawPicture,m_sudoku_corner[2],cv::Scalar(255,0,0),cv::MARKER_CROSS,marker_size,1,8);
+    drawMarker(drawPicture,m_sudoku_corner[3],cv::Scalar(50,225,235),cv::MARKER_CROSS,marker_size,1,8);
 
+    //rectangle(m_picture,Point2f(0.0f,0.0f),m_picture_center,Scalar(255,0,0),1,LINE_4,0);
+    //rectangle(m_picture,Point2f(m_picture.cols,0.0f),m_picture_center,Scalar(0,255,0),1,LINE_4,0);
+    //rectangle(m_picture,Point2f(m_picture.cols,m_picture.rows),m_picture_center,Scalar(0,0,255),1,LINE_4,0);
+    //rectangle(m_picture,Point2f(0.0f,m_picture.rows),m_picture_center,Scalar(255,255,255),1,LINE_4,0);
+
+    //drawMarker(drawPicture,minBox.center,cv::Scalar(0,0,255),cv::MARKER_CROSS,20,1,cv::LINE_8);
+    imshow("Markers",drawPicture);
+
+    //************************************************************
 }
 
 bool SudokuDetector::isDetectionComplete() const
