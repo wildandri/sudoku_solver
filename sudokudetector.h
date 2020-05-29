@@ -12,21 +12,25 @@
 class SudokuDetector
 {
 public:
-    SudokuDetector();
-    SudokuDetector(cv::Mat);
+    SudokuDetector(int height, int width);
 
-    bool detect();
+    bool detect(cv::Mat &picture);
 
     bool isDetectionComplete() const;
     cv::Mat getDetectedSudoku() const;
 
 
 private:
-    cv::Mat extractSudoku(std::vector<cv::Point>) const;
+    void calcSudokuCorner(std::vector<cv::Point> &approx);
+    void prepare();
 
-    cv::Mat m_picture;
     cv::Mat m_detectedSudoku;
     bool m_isComplete;
+    int m_height;
+    int m_width;
+    long m_minSudokuArea;
+    cv::Point2f m_warpCorners[4];
+    cv::Point2f m_sudoku_corner[4];
 };
 
 #endif // SUDOKUDETECTOR_H

@@ -13,31 +13,29 @@ class SolverEngine
 {
 public:
     // Constructors
-    SolverEngine();
-    SolverEngine(cv::Mat picture);
+    SolverEngine(int height, int width);
 
     //Functions
     bool findSudoku();
-    std::vector<short int> detectNumbers(cv::Mat);
-
-
+    std::vector<short int> detectNumbers(cv::Mat picture);
 
     // Getter & Setter
-    void setPicture(cv::Mat picture);
+    int getHeight() const;
+    int getWidth() const;
+    void setPicture(cv::Mat &picture);
     cv::Mat getPicture() const;
     cv::Mat getDetectedSudoku() const;
     std::vector<short int> getSudokuNumbers();
 
 
 private:
+    int m_height;
+    int m_width;
     cv::Mat m_picture;
     cv::Mat m_detectedSudoku;
     std::vector<short int> m_sudokuNumbers;
-
-
-    // Sudoku Detector
-    // Number Detector
-    // Sudoku Solver
+    SudokuDetector m_sudokuDetector;
+    NumberDetector m_numberDetector;
 };
 
 #endif // SOLVERENGINE_H

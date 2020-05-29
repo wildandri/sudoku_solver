@@ -14,7 +14,7 @@ NumberDetector::NumberDetector()
     ocr->SetVariable("debug_file", "/dev/null");
 }
 
-std::vector<short int> NumberDetector::findNumbers(cv::Mat picture)
+std::vector<short int> NumberDetector::findNumbers(cv::Mat &picture)
 {
 
     std::vector<short int> sudokuNumbers;
@@ -26,13 +26,10 @@ std::vector<short int> NumberDetector::findNumbers(cv::Mat picture)
     float x_dist = x_size / 9;
     float y_dist = y_size / 9;
 
-    int result[9][9];
     static cv::Rect2f num_rect[9][9];
 
     for (size_t k = 1; k < 10; k ++) {
         for (size_t j = 1; j < 10; j ++) {
-            result[k-1][j-1] = 0;
-
 
             cv::Point2f p1 = cv::Point2f((j * x_dist) - x_dist + 5,(k * y_dist) - y_dist + 3);
             cv::Point2f p2 = cv::Point2f((j*x_dist) - 5, (k * y_dist) - 3);

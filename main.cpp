@@ -27,18 +27,23 @@ int main()
         std::cout << "Video stream not opened !!!" << std::endl;
     }
 
-    SolverEngine es = SolverEngine();
+    SolverEngine es = SolverEngine(400,400);
+
+    vc.set(cv::CAP_PROP_FRAME_WIDTH ,es.getWidth());
+    vc.set(cv::CAP_PROP_FRAME_HEIGHT ,es.getHeight());
+
     do
     {
         vc >>pic;
         cvtColor( pic, pic, cv::COLOR_BGR2GRAY );
         cv::imshow("Livestream", pic);
 
-
         es.setPicture(pic);
-        cv::waitKey(100);
+        cv::waitKey(10);
 
     } while (!es.findSudoku());
+
+    vc.release();
 
     std::vector<short int> result = es.detectNumbers(es.getDetectedSudoku());
 
